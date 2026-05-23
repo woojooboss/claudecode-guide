@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Claude Code 실전 활용법 — 만든 사람이 직접 알려준 27분 총정리</title>
+<meta name="description" content="Anthropic이 직접 공개한 Claude Code 실전 사용법 27분 워크샵을, 비개발자도 따라올 수 있도록 단계별로 정리했습니다." />
+<meta property="og:title" content="Claude Code 실전 활용법 — 만든 사람이 직접 알려준 27분 총정리" />
+<meta property="og:description" content="Anthropic의 Boris가 공개한 Claude Code 실전 워크샵 완전 정리본." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --ink: #0A0A0A;
+    --ink-2: #404040;
+    --ink-3: #6B6B6B;
+    --line: #ECECEC;
+    --line-2: #D8D8D8;
+
+    --mint:   #E6F4EC;
+    --pink:   #FBEAEE;
+    --blue:   #E8EFFB;
+    --yellow: #FAF1CF;
+    --lilac:  #ECEAF8;
+    --peach:  #FCEFE2;
+
+    --mint-ink:   #1F6F4A;
+    --pink-ink:   #8B3D54;
+    --blue-ink:   #2C4B8F;
+    --yellow-ink: #7A5B12;
+    --lilac-ink:  #4D3D8C;
+    --peach-ink:  #8A4A1E;
+
+    --dark: #0F0F10;
+    --dark-2: #1A1A1C;
+    --accent: #FD4000;
+
+    --radius-lg: 28px;
+    --radius-md: 20px;
+    --radius-sm: 14px;
+    --radius-pill: 999px;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.06);
+
+    --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+  a { color: inherit; text-decoration: none; }
+  p { margin: 0 0 0.5em; }
+  ul { margin: 0; padding-left: 1.2em; }
+  li { margin-bottom: 0.4em; }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ─── GIFT BAR ──────────────────────────────────── */
+  .gift-wrap {
+    position: sticky;
+    top: 16px;
+    z-index: 50;
+    padding: 0 16px;
+  }
+  .gift {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--dark);
+    color: #fff;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+    padding: 13px 56px 13px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    position: relative;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .gift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+  }
+  .gift-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    flex-shrink: 0;
+    object-fit: cover;
+    display: block;
+  }
+  .gift-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .gift-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #CAAA44;
+    font-weight: 700;
+    font-size: 14.5px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .gift-divider {
+    width: 1px;
+    height: 14px;
+    background: rgba(255,255,255,0.18);
+  }
+  .gift-text {
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gift-arrow {
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 17px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  @media (max-width: 560px) {
+    .gift {
+      padding: 10px 44px 10px 8px;
+      gap: 12px;
+      max-width: 460px;
+    }
+    .gift-avatar { width: 38px; height: 38px; }
+    .gift-center {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      line-height: 1.3;
+    }
+    .gift-divider { display: none; }
+    .gift-label { font-size: 12.5px; }
+    .gift-text { font-size: 13.5px; white-space: normal; }
+    .gift-arrow { right: 18px; }
+  }
+
+  /* ─── HERO ──────────────────────────────────────── */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+  }
+  .hero-image {
+    margin: 48px auto 0;
+    max-width: 880px;
+    width: 100%;
+  }
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+  }
+  @media (max-width: 560px) {
+    .hero-image { margin-top: 32px; }
+    .hero-image img { border-radius: var(--radius-sm); }
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--yellow);
+    color: var(--yellow-ink);
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 5.6vw, 60px);
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+  }
+  .hero h1 .soft { color: var(--ink-3); font-weight: 600; }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--ink-2);
+    max-width: 640px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .meta-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 22px 18px;
+    text-align: left;
+  }
+  .meta-card .label {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .meta-card .value {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 56px 0 40px; }
+    .hero-meta { grid-template-columns: 1fr; }
+  }
+
+  /* ─── SECTION ───────────────────────────────────── */
+  section { padding: 56px 0; }
+  .section-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+  }
+  .section-lead {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 640px;
+    margin-bottom: 40px;
+    line-height: 1.75;
+  }
+
+  /* ─── INTRO CARD ────────────────────────────────── */
+  .intro {
+    background: var(--lilac);
+    border-radius: var(--radius-lg);
+    padding: 48px 44px;
+    margin-top: 24px;
+  }
+  .intro h3 {
+    margin: 0 0 16px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--lilac-ink);
+  }
+  .intro p {
+    color: var(--ink-2);
+    font-size: 16.5px;
+    line-height: 1.8;
+  }
+  .intro p + p { margin-top: 12px; }
+  .intro strong { color: var(--ink); }
+  @media (max-width: 560px) {
+    .intro { padding: 32px 22px; }
+  }
+
+  /* ─── PRINCIPLE CARDS ───────────────────────────── */
+  .principles {
+    display: grid;
+    gap: 20px;
+  }
+  .pcard {
+    border-radius: var(--radius-lg);
+    padding: 40px 40px 38px;
+    position: relative;
+    border: 1px solid transparent;
+  }
+  .pcard .pnum {
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+  }
+  .pcard h3 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin: 0 0 14px;
+    padding-right: 60px;
+  }
+  .pcard .pkicker {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pcard p {
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.8;
+    margin: 0 0 12px;
+  }
+  .pcard .pcallout {
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.55);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pcard.c-mint   { background: var(--mint); }
+  .pcard.c-mint .pkicker   { color: var(--mint-ink); }
+  .pcard.c-pink   { background: var(--pink); }
+  .pcard.c-pink .pkicker   { color: var(--pink-ink); }
+  .pcard.c-blue   { background: var(--blue); }
+  .pcard.c-blue .pkicker   { color: var(--blue-ink); }
+  .pcard.c-yellow { background: var(--yellow); }
+  .pcard.c-yellow .pkicker { color: var(--yellow-ink); }
+  .pcard.c-peach  { background: var(--peach); }
+  .pcard.c-peach .pkicker  { color: var(--peach-ink); }
+  @media (max-width: 560px) {
+    .pcard { padding: 32px 24px; }
+    .pcard h3 { font-size: 22px; padding-right: 48px; }
+  }
+
+  /* ─── TERM BOX ──────────────────────────────────── */
+  .termbox {
+    margin-top: 18px;
+    background: #fff;
+    border: 1px dashed var(--line-2);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 14.5px;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .termbox b { color: var(--ink); }
+
+  /* ─── SHORTCUTS ─────────────────────────────────── */
+  .shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .sc-item {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sc-key {
+    display: inline-block;
+    background: var(--ink);
+    color: #fff;
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    font-size: 13px;
+    padding: 5px 11px;
+    border-radius: 8px;
+    align-self: flex-start;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .sc-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 4px;
+  }
+  .sc-desc {
+    color: var(--ink-3);
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  @media (max-width: 560px) {
+    .shortcuts { grid-template-columns: 1fr; }
+  }
+
+  /* ─── ADVANCED ──────────────────────────────────── */
+  .adv-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .adv-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 28px 30px;
+  }
+  .adv-card h4 {
+    margin: 0 0 10px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  .adv-card p {
+    color: var(--ink-2);
+    font-size: 15.5px;
+    line-height: 1.75;
+    margin: 0;
+  }
+  @media (max-width: 560px) {
+    .adv-card { padding: 24px 22px; }
+  }
+
+  /* ─── FAQ ───────────────────────────────────────── */
+  .faq details {
+    border-bottom: 1px solid var(--line);
+    padding: 20px 4px;
+  }
+  .faq details:first-of-type { border-top: 1px solid var(--line); }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: '+';
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink-3);
+    transition: transform .2s;
+  }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq .answer {
+    margin-top: 12px;
+    color: var(--ink-2);
+    font-size: 15.5px;
+    line-height: 1.8;
+  }
+
+  /* ─── PULLQUOTE ─────────────────────────────────── */
+  .pullquote {
+    background: var(--peach);
+    border-radius: var(--radius-lg);
+    padding: 44px 44px;
+    text-align: center;
+    margin-top: 24px;
+  }
+  .pullquote p {
+    margin: 0;
+    font-size: clamp(20px, 2.5vw, 26px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.45;
+    color: var(--peach-ink);
+  }
+  .pullquote p + p {
+    margin-top: 14px;
+    font-size: 15px;
+    color: var(--ink-2);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  @media (max-width: 560px) {
+    .pullquote { padding: 32px 24px; }
+  }
+
+  /* ─── CTA DARK ──────────────────────────────────── */
+  .cta {
+    background: var(--dark);
+    color: #fff;
+    margin-top: 60px;
+    padding: 96px 24px 60px;
+    text-align: center;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .cta h2 {
+    font-size: clamp(32px, 4.6vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0 0 18px;
+    line-height: 1.2;
+  }
+  .cta p {
+    color: #B8B8B8;
+    font-size: 17px;
+    max-width: 520px;
+    margin: 0 auto 36px;
+    line-height: 1.75;
+  }
+  .cta-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 26px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 15.5px;
+    transition: transform .15s, opacity .15s;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: #fff;
+    color: var(--dark);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255,255,255,0.25);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .cta-meta {
+    margin-top: 56px;
+    color: #6E6E70;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+  }
+  .cta-meta a {
+    color: #B8B8B8;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ─── KICKER STRONG ─────────────────────────────── */
+  mark.hl {
+    background: var(--yellow);
+    color: var(--ink);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════ GIFT BAR ════════════ -->
+<div class="gift-wrap">
+  <a class="gift" href="https://blog.naver.com/woojooboss/223558177937" target="_blank" rel="noopener noreferrer">
+    <img class="gift-avatar" src="avatar.png" alt="우주보스" />
+    <div class="gift-center">
+      <span class="gift-label">🎁 우주보스의 선물</span>
+      <span class="gift-divider"></span>
+      <span class="gift-text">10GB 분량의 무료 콘텐츠 소스팩 받기</span>
+    </div>
+    <span class="gift-arrow" aria-hidden="true">→</span>
+  </a>
+</div>
+
+<!-- ════════════ HERO ════════════ -->
+<header class="hero container">
+  <div class="hero-badge">⚡ Anthropic 공식 워크샵 · 27분 · 무료</div>
+  <h1>
+    Claude Code,<br/>
+    <span class="soft">만든 사람이 직접 알려준</span><br/>
+    실전 300% 활용법
+  </h1>
+  <p class="hero-sub">
+    “프롬프트 작성법” 강의인 줄 알았는데 열어보니 전혀 다른 이야기였습니다.
+    Anthropic이 공개한 27분 워크샵을, 한 장면도 빠짐없이 정리했습니다.
+  </p>
+  <div class="hero-meta">
+    <div class="meta-card">
+      <div class="label">발표자</div>
+      <div class="value">Boris<br/><span style="font-weight:500;color:var(--ink-3);font-size:14px;">Claude Code 제작자</span></div>
+    </div>
+    <div class="meta-card">
+      <div class="label">길이</div>
+      <div class="value">27분<br/><span style="font-weight:500;color:var(--ink-3);font-size:14px;">실전 위주, 이론 없음</span></div>
+    </div>
+    <div class="meta-card">
+      <div class="label">비용</div>
+      <div class="value">무료<br/><span style="font-weight:500;color:var(--ink-3);font-size:14px;">등록·결제 없음</span></div>
+    </div>
+  </div>
+
+  <div class="hero-image">
+    <img src="hero.jpg" alt="Claude Code 워크샵 무대 — Boris의 발표 장면. 화면에 'Claude Code is a new kind of AI assistant'와 다섯 가지 특징이 표시되어 있다." loading="eager" />
+  </div>
+</header>
+
+<!-- ════════════ INTRO ════════════ -->
+<section id="intro">
+  <div class="container">
+    <span class="section-tag">01 · 무엇에 관한 영상인가</span>
+    <h2 class="section-title">Claude를 만든 회사가<br/>“진짜 사용법”을 풀었다.</h2>
+    <p class="section-lead">
+      Claude Code는 Anthropic이 만든 AI 코딩 도구입니다.
+      이 영상의 제작자 Boris는 그 도구를 직접 설계한 사람입니다.
+    </p>
+
+    <div class="intro">
+      <h3>한 줄 요약</h3>
+      <p>
+        그동안의 AI 코딩 도구가 “한두 줄을 추천”하는 수준이었다면,
+        Claude Code는 <strong>기능 전체를 짜고, 파일 전체를 만들고, 버그를 한 번에 고치는</strong> 단계로 넘어갔습니다.
+      </p>
+      <p>
+        Boris의 메시지는 일관됩니다. <strong>“우리가 시킨 게 아니라, 모델이 똑똑해서 알아서 한다.”</strong>
+        그러니까 우리가 할 일은 화려한 명령어를 외우는 게 아니라,
+        모델이 똑똑하게 굴 수 있는 환경을 만들어 주는 것입니다.
+      </p>
+      <p>
+        이 문서는 그 환경을 만드는 다섯 가지 원칙을 정리한 것입니다.
+      </p>
+    </div>
+
+    <div class="termbox" style="margin-top:32px;">
+      <b>잠깐, 용어 정리.</b><br/>
+      이 문서에는 개발자들이 쓰는 단어가 몇 번 등장합니다. 어렵게 느껴지면 아래만 기억하셔도 됩니다.<br/>
+      · <b>코드</b> = 프로그램을 움직이는 글<br/>
+      · <b>코드베이스</b> = 코드가 모여있는 작업 폴더 전체<br/>
+      · <b>터미널</b> = 컴퓨터에 직접 명령어를 입력하는 검은 창<br/>
+      · <b>CLI</b> = 그 검은 창에서 쓰는 명령어 프로그램<br/>
+      · <b>git</b> = 코드의 변경 이력을 자동 기록하는 도구
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ PRINCIPLES ════════════ -->
+<section id="principles">
+  <div class="container">
+    <span class="section-tag">02 · 핵심 5원칙</span>
+    <h2 class="section-title">설정 한두 가지만 바꿔도<br/>결과 품질이 달라진다.</h2>
+    <p class="section-lead">
+      Boris가 27분 동안 반복해서 강조한 다섯 가지입니다.
+      이 다섯 개만 알면 Claude Code를 두 배, 세 배 더 똑똑하게 쓸 수 있습니다.
+    </p>
+
+    <div class="principles">
+
+      <!-- 원칙 1 -->
+      <article class="pcard c-mint">
+        <span class="pnum">(01)</span>
+        <div class="pkicker">PRINCIPLE 01</div>
+        <h3>처음부터 시키지 말고,<br/>먼저 “물어보라.”</h3>
+        <p>
+          새 직원이 회사에 오면 첫날부터 일을 시키지 않습니다. 회사 구조부터 설명합니다.
+          Claude Code도 똑같습니다.
+        </p>
+        <p>
+          가장 흔한 실수는 첫 화면에서 곧바로 <strong>“이런 기능 만들어줘”</strong> 라고 명령하는 것입니다.
+          그 대신 Anthropic이 신입에게 시키는 일은 단 하나입니다.
+          <mark class="hl">“이 폴더에 대해 질문하기.”</mark>
+        </p>
+        <p>
+          “이 코드는 어디에서 어떻게 쓰여?” “이 함수는 왜 인자가 15개나 돼?” “이 기능은 누가 언제 만들었어?”
+          이런 질문부터 던져서 작업 폴더의 구조를 머릿속에 그린 다음에 작업을 시작합니다.
+        </p>
+        <div class="pcallout">
+          이 방법으로 Anthropic의 신규 엔지니어 적응 기간이 <mark class="hl">2~3주에서 2~3일로</mark> 줄었습니다.
+        </div>
+        <div class="termbox">
+          <b>왜 안전한가?</b> Claude Code는 코드를 외부 서버로 보내지 않습니다.
+          내 컴퓨터 안에서만 작동하고, 학습에도 사용되지 않습니다. 사내 코드도 안심하고 질문할 수 있습니다.
+        </div>
+      </article>
+
+      <!-- 원칙 2 -->
+      <article class="pcard c-pink">
+        <span class="pnum">(02)</span>
+        <div class="pkicker">PRINCIPLE 02</div>
+        <h3>바로 쓰게 하지 말고<br/>“계획부터” 세우게 하라.</h3>
+        <p>
+          “3만 줄짜리 결제 기능을 만들어줘”라고 한 번에 부탁하면 열에 아홉은 엉뚱한 결과가 나옵니다.
+          AI가 멍청해서가 아니라, 사람도 그런 식으로 일하지 않기 때문입니다.
+        </p>
+        <p>
+          해결책은 별 거 없습니다. 부탁하기 전에 문장 하나만 덧붙이면 됩니다.
+        </p>
+        <div class="pcallout" style="background:#fff;font-weight:500;font-size:15.5px;color:var(--ink-2);font-style:italic;">
+          “코드를 쓰기 전에, 먼저 아이디어를 정리하고 계획을 세운 뒤,<br/>
+          나와 함께 검토하고 승인을 받은 다음에 작성해줘.”
+        </div>
+        <p style="margin-top:18px;">
+          이 한 문장이면 끝입니다. 별도의 설정도, 도구도 필요 없습니다.
+          결과 품질이 눈에 띄게 올라갑니다.
+        </p>
+      </article>
+
+      <!-- 원칙 3 -->
+      <article class="pcard c-blue">
+        <span class="pnum">(03)</span>
+        <div class="pkicker">PRINCIPLE 03</div>
+        <h3>내가 쓰는 도구를<br/>연결해 두어라.</h3>
+        <p>
+          평소에 자주 쓰는 명령어와 외부 도구가 있다면, Claude Code에게 한 번만 알려주세요.
+          그 이후로는 알아서 꺼내 씁니다.
+        </p>
+        <p>
+          연결할 수 있는 도구는 두 종류입니다.
+        </p>
+        <ul style="color:var(--ink-2);font-size:15.5px;line-height:1.85;margin-top:8px;">
+          <li><strong>내 컴퓨터의 명령어</strong> — 평소 터미널에서 자주 쓰는 명령어를 알려주면 그대로 사용합니다.</li>
+          <li><strong>외부 도구 연결(MCP)</strong> — 슬랙, 노션, 디자인 툴 등 외부 서비스와 연결하는 표준 규격입니다. 추가하고 사용법만 알려주면 즉시 활용합니다.</li>
+        </ul>
+        <div class="pcallout">
+          요점은 한 가지. Claude Code는 <mark class="hl">연결된 만큼</mark> 일합니다.
+        </div>
+        <div class="termbox">
+          <b>MCP란?</b> Model Context Protocol의 약자로, AI와 외부 도구를 연결하는 표준 규격입니다.
+          쉽게 말해 “Claude가 다른 프로그램에 손을 뻗을 수 있게 해주는 통로”입니다.
+        </div>
+      </article>
+
+      <!-- 원칙 4 -->
+      <article class="pcard c-yellow">
+        <span class="pnum">(04)</span>
+        <div class="pkicker">PRINCIPLE 04</div>
+        <h3>“스스로 확인할 수단”을<br/>쥐여주면 거의 완벽해진다.</h3>
+        <p>
+          Boris가 워크샵에서 가장 강하게 강조한 부분입니다.
+          Claude Code에게 <strong>자기 결과를 검증할 수단</strong>을 주면 결과가 차원이 달라집니다.
+        </p>
+        <p>
+          예를 들어 웹 화면을 만들어달라고 부탁할 때, 그냥 “만들어줘”라고만 하면 한 번에 만족스러운 결과가 나오기 어렵습니다.
+          그런데 <strong>“만든 다음에 스크린샷을 찍어서 직접 확인하고, 어색하면 다시 고쳐”</strong>라고 하면
+          두세 번 스스로 반복하면서 거의 완벽한 결과를 가져옵니다.
+        </p>
+        <p>
+          코딩이라면 자동 테스트, 디자인이라면 스크린샷, 앱이라면 시뮬레이터. <strong>피드백 수단을 줘라.</strong>
+          이게 핵심입니다.
+        </p>
+        <div class="pcallout">
+          사람이 일일이 점검하지 않아도, AI가 스스로 점검·수정·재시도합니다.
+        </div>
+      </article>
+
+      <!-- 원칙 5 -->
+      <article class="pcard c-lilac" style="background:var(--lilac);">
+        <span class="pnum">(05)</span>
+        <div class="pkicker" style="color:var(--lilac-ink);">PRINCIPLE 05</div>
+        <h3>한 번 설정하고<br/>“팀과 공유”하라.</h3>
+        <p>
+          작업 폴더 안에 <code style="background:#fff;padding:2px 8px;border-radius:6px;font-size:14px;">CLAUDE.md</code>
+          라는 메모 파일을 하나 만들어 두면, Claude Code가 매번 자동으로 읽습니다.
+        </p>
+        <p>
+          여기에는 이런 걸 적어두면 좋습니다.
+        </p>
+        <ul style="color:var(--ink-2);font-size:15.5px;line-height:1.85;margin-top:8px;">
+          <li>이 프로젝트에서 자주 쓰는 명령어</li>
+          <li>“이런 식으로 작성해줘” 같은 작업 규칙</li>
+          <li>주의해야 할 파일·폴더</li>
+          <li>같이 일하는 동료가 알아야 할 맥락</li>
+        </ul>
+        <p style="margin-top:14px;">
+          핵심은 다음입니다. 이 파일을 팀과 공유하는 순간,
+          <strong>한 사람의 설정이 조직 전체의 자산</strong>이 됩니다. 누군가 한 번 잘 만들어두면 모두가 그 혜택을 봅니다.
+        </p>
+        <div class="pcallout">
+          Anthropic의 기술 인력 약 <mark class="hl">80%가 매일 Claude Code를 사용</mark>하는 이유 중 하나입니다.
+        </div>
+        <div class="termbox">
+          <b>CLAUDE.md란?</b> 작업 폴더에 두는 텍스트 메모 파일입니다. 매 작업이 시작될 때 자동으로 읽혀,
+          별도로 명령하지 않아도 그 안의 내용이 기본 설정처럼 적용됩니다. 너무 길면 오히려 방해되니 짧게 유지하세요.
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ PULLQUOTE ════════════ -->
+<section style="padding-top:0;">
+  <div class="container">
+    <div class="pullquote">
+      <p>“우리가 일일이 시킨 게 아닙니다.<br/>모델이 똑똑해서 알아서 합니다.”</p>
+      <p>— Boris, Claude Code 제작자</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ SHORTCUTS ════════════ -->
+<section id="shortcuts">
+  <div class="container">
+    <span class="section-tag">03 · 알아두면 좋은 단축키</span>
+    <h2 class="section-title">27분 영상에서<br/>가장 자주 나온 네 가지.</h2>
+    <p class="section-lead">
+      이 네 개만 알아도 사용 경험이 확연히 달라집니다.
+    </p>
+
+    <div class="shortcuts">
+      <div class="sc-item">
+        <span class="sc-key">Shift + Tab</span>
+        <div class="sc-title">자동 승인 모드</div>
+        <div class="sc-desc">파일 수정마다 일일이 확인하지 않아도 알아서 진행하게 합니다. 방향이 맞을 때나 반복 작업에 유용합니다.</div>
+      </div>
+      <div class="sc-item">
+        <span class="sc-key">#</span>
+        <div class="sc-title">기억시키기</div>
+        <div class="sc-desc">“이건 기억해 둬”라고 가르치는 키. 잘못된 사용법을 고쳐주거나 새 규칙을 추가할 때 사용합니다.</div>
+      </div>
+      <div class="sc-item">
+        <span class="sc-key">!</span>
+        <div class="sc-title">컴퓨터 명령 직접 실행</div>
+        <div class="sc-desc">컴퓨터에 직접 명령어를 내리고, 그 결과를 Claude가 이어받아 작업합니다. 긴 명령을 빠르게 처리할 때.</div>
+      </div>
+      <div class="sc-item">
+        <span class="sc-key">Esc</span>
+        <div class="sc-title">즉시 중단</div>
+        <div class="sc-desc">하던 일을 안전하게 멈춥니다. 방향이 어긋났다 싶으면 망설이지 말고 중단 → 다시 지시.</div>
+      </div>
+      <div class="sc-item">
+        <span class="sc-key">@파일명</span>
+        <div class="sc-title">파일 콕 집어 알려주기</div>
+        <div class="sc-desc">특정 파일이나 폴더를 작업 맥락에 추가합니다. “이 파일 참고해서 작업해줘” 할 때 사용.</div>
+      </div>
+      <div class="sc-item">
+        <span class="sc-key">Esc Esc</span>
+        <div class="sc-title">이전 상태로 되돌리기</div>
+        <div class="sc-desc">Esc를 두 번 누르면 이전 대화 지점으로 돌아갑니다. 잘못 지시했을 때 복구 수단.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ ADVANCED ════════════ -->
+<section id="advanced">
+  <div class="container">
+    <span class="section-tag">04 · 한 단계 더</span>
+    <h2 class="section-title">익숙해진 다음에<br/>알면 좋은 것들.</h2>
+    <p class="section-lead">
+      처음부터 알 필요는 없지만, 손에 익은 뒤 한 단계 더 나아가고 싶을 때 참고하세요.
+    </p>
+
+    <div class="adv-grid">
+      <div class="adv-card">
+        <h4>📁 설정 계층 — 개인 / 팀 / 회사</h4>
+        <p>
+          Claude Code의 설정은 세 단계로 나뉩니다.
+          <strong>프로젝트별 설정</strong>(폴더마다 따로), <strong>개인 전역 설정</strong>(내 컴퓨터 전체),
+          <strong>회사 정책</strong>(관리자가 배포하는 규칙). 한 사람이 잘 만들면 팀 전체가 같이 쓸 수 있는 구조입니다.
+        </p>
+      </div>
+      <div class="adv-card">
+        <h4>⚡ 자동화 (SDK / -p 옵션)</h4>
+        <p>
+          Claude Code는 대화창에서만 쓰는 게 아니라, 자동화 스크립트의 일부로도 쓸 수 있습니다.
+          예를 들어 “이번 주에 우리 팀이 무엇을 출시했는지 git 기록 보고 정리해줘” 같은 반복 작업을 자동화할 수 있습니다.
+          Anthropic 사내에서도 이렇게 활용합니다.
+        </p>
+      </div>
+      <div class="adv-card">
+        <h4>🧩 병렬 실행 — “Claude 여러 명”</h4>
+        <p>
+          Boris 본인도 보통 Claude Code 창을 여러 개 띄워놓고 일합니다.
+          한 창에서는 기능을 만들고, 다른 창에서는 테스트를 돌리고, 또 다른 창에서는 문서를 정리하는 식입니다.
+          익숙해지면 “AI 동료들을 동시에 부리는” 감각이 됩니다.
+        </p>
+      </div>
+      <div class="adv-card">
+        <h4>🖼️ 이미지·스크린샷도 자유롭게</h4>
+        <p>
+          처음부터 이미지 인식이 지원됩니다. 화면을 캡처해서 끌어다 놓거나 붙여넣으면 그대로 이해합니다.
+          “이 디자인 시안처럼 만들어줘” 같은 부탁이 가능합니다.
+        </p>
+      </div>
+      <div class="adv-card">
+        <h4>🗣️ 받아쓰기로 더 빠르게</h4>
+        <p>
+          긴 지시 사항은 음성 입력이 훨씬 빠릅니다. 운영체제의 받아쓰기 기능을 켜고
+          동료에게 말하듯 부탁하세요. Boris도 실제로 그렇게 씁니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ FAQ ════════════ -->
+<section id="faq">
+  <div class="container">
+    <span class="section-tag">05 · 자주 묻는 질문</span>
+    <h2 class="section-title">워크샵 Q&A 정리.</h2>
+    <p class="section-lead">
+      영상 후반부에 나온 질의응답을 그대로 옮긴 것입니다.
+    </p>
+
+    <div class="faq">
+      <details>
+        <summary>왜 IDE(코딩 전용 프로그램)가 아니라 터미널을 쓰나요?</summary>
+        <div class="answer">
+          두 가지 이유입니다. 첫째, 사람마다 쓰는 프로그램이 너무 다양합니다(VS Code, Xcode, Vim 등). 어떤 도구를 쓰든 공통으로 통하는 게 터미널이라 거기에 맞췄습니다.
+          둘째, AI 모델 자체가 워낙 빠르게 발전하기 때문에, 무거운 UI를 만들어 두면 모델이 발전할 때 같이 뜯어고쳐야 합니다. 가벼운 형태로 유지하는 게 합리적이었습니다.
+        </div>
+      </details>
+      <details>
+        <summary>가장 어려웠던 기술 문제는 무엇이었나요?</summary>
+        <div class="answer">
+          컴퓨터 명령어를 안전하게 실행시키는 부분이었습니다. 명령어 하나가 시스템 전체를 바꿀 수 있기 때문에, 매번 사용자에게 확인을 받자니 답답하고,
+          그냥 다 허용하자니 위험합니다. 결국 “읽기만 하는 명령은 자유롭게, 변경하는 명령은 신중하게”라는 단계별 권한 체계를 만들었습니다.
+        </div>
+      </details>
+      <details>
+        <summary>Anthropic 내부에서는 얼마나 쓰나요?</summary>
+        <div class="answer">
+          엔지니어, 연구원 모두가 매일 사용합니다. 기술직 인력의 약 80%가 매일 Claude Code를 씁니다.
+          코드를 직접 쓰지 않는 직무도 활용합니다. 예를 들어 연구원들은 노트북(데이터 분석용 도구) 작업에 쓰기도 합니다.
+        </div>
+      </details>
+      <details>
+        <summary>비개발자도 쓸 수 있나요?</summary>
+        <div class="answer">
+          쓸 수 있습니다. 다만 “코드를 쓰지 않는다”와 “파일·폴더 개념을 모른다”는 다릅니다.
+          기본적으로 작업 폴더가 무엇인지, 터미널 창을 어떻게 여는지 정도는 알아야 합니다. 그 이후로는 동료에게 부탁하듯 한국어로 쓰면 됩니다.
+        </div>
+      </details>
+      <details>
+        <summary>내 코드가 학습에 사용되나요?</summary>
+        <div class="answer">
+          아닙니다. Claude Code는 코드를 내 컴퓨터 안에서만 다룹니다. 외부 데이터베이스를 만들지도 않고, 학습에도 사용되지 않습니다.
+          이게 사내 코드에서도 안심하고 쓸 수 있는 이유입니다.
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ CTA ════════════ -->
+<section class="cta">
+  <h2>우주보스를<br/>팔로우 해주세요</h2>
+  <p>
+    다양한 AI 인사이트는 물론<br/>
+    1인 지식 콘텐츠 비즈니스의 성공 프로세스를 전해드립니다.
+  </p>
+  <div class="cta-buttons">
+    <a class="btn btn-primary" href="https://instagram.com/woojooboss_" target="_blank" rel="noopener noreferrer">@woojooboss_ 팔로우</a>
+  </div>
+  <div class="cta-meta">
+    이 정리본이 도움이 되셨다면 주변에 공유해 주세요. <br/>
+    다음 사람의 시간을 아껴줍니다.
+  </div>
+</section>
+
+</body>
+</html>
